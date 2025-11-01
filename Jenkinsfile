@@ -15,10 +15,12 @@ pipeline {
             steps {
                 echo '✅ Building Docker image...'
                 sh '''
-                    echo "Current directory: $(pwd)"
-                    echo "Files:"
-                    ls -la
-                    docker build -t aceest_fitness:v3 -f Dockerfile .
+                    echo "--- Checking current directory ---"
+                    pwd
+                    echo "--- Listing files ---"
+                    ls -R
+                    echo "--- Building image ---"
+                    docker build -t aceest_fitness:v3 -f /Users/sindhujv/.jenkins/workspace/ACEest_Fitness_CI/Dockerfile /Users/sindhujv/.jenkins/workspace/ACEest_Fitness_CI
                 '''
             }
         }
