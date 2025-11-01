@@ -25,7 +25,7 @@ pipeline {
             steps {
                 echo "🧪 Running unit tests with pytest..."
                 sh '''
-                    docker run --rm aceest_fitness:v6 pytest -v || exit 1
+                    docker run --rm -v \$(pwd):/app aceest_fitness:v6 sh -c 'pytest -v --maxfail=1 --disable-warnings'
                 '''
             }
         }
