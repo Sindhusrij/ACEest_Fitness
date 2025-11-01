@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_PATH = '/opt/homebrew/bin/docker'
-        WORKSPACE_DIR = '/Users/sindhujv/.jenkins/workspace/ACEest_Fitness_CI'
+        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo '📥 Checking out source code...'
+                echo "📥 Checking out source code..."
                 checkout scm
                 sh '''
                     echo "Current workspace:"
@@ -22,32 +22,42 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo '🐳 Building Docker image...'
+                echo "🐳 Building Docker image..."
                 sh '''
-                    echo "Using Docker path: $DOCKER_PATH"
-                    echo "Building from workspace: $WORKSPACE_DIR"
-                    $DOCKER_PATH build -t aceest_fitness:v3 -f $WORKSPACE_DIR/Dockerfile $WORKSPACE_DIR
+                    echo "Using Docker path: $(which docker)"
+                    docker --version
+                    docker build -t aceest_fitness:v3 -f Dockerfile .
                 '''
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                echo '🚀 Running container...'
+                echo "🚀 Running container..."
                 sh '''
-                    $DOCKER_PATH run -d -p 5001:5000 aceest_fitness:v3
-                    $DOCKER_PATH ps
+                    docker ps -a
+                    echo "Cleaning up old containers if any..."
+                    docker rm -f aceest_fitness_container || true
+                    echo "Starting new container..."
+                    docker run -d --name aceest_fitness_container -p 5001:5000 aceest_fitness:v3
                 '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo "🔍 Checking running containers..."
+                sh 'docker ps'
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Build and container run successful!'
+            echo "✅ Build and deployment successful!"
         }
         failure {
-            echo '❌ Build failed — check the logs.'
+            echo "❌ Build failed — check the logs."
         }
     }
 }
