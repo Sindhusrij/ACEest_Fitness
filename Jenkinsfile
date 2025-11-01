@@ -1,22 +1,14 @@
 pipeline {
     agent any
-
     environment {
         PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
     }
-
     stages {
 
         stage('Checkout') {
             steps {
                 echo "📥 Checking out source code..."
                 checkout scm
-                sh '''
-                    echo "Current workspace:"
-                    pwd
-                    echo "Files in workspace:"
-                    ls -la
-                '''
             }
         }
 
@@ -24,29 +16,32 @@ pipeline {
             steps {
                 echo "🐳 Building Docker image..."
                 sh '''
-                    echo "Using Docker path: $(which docker)"
-                    docker --version
-                    docker build -t aceest_fitness:v3 -f Dockerfile .
+                    docker build -t aceest_fitness:v6 -f Dockerfile .
                 '''
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Run Unit Tests') {
             steps {
-                echo "🚀 Running container..."
+                echo "🧪 Running unit tests with pytest..."
                 sh '''
-                    docker ps -a
-                    echo "Cleaning up old containers if any..."
+                    docker run --rm aceest_fitness:v6 pytest -v || exit 1
+                '''
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                echo "🚀 Deploying container..."
+                sh '''
                     docker rm -f aceest_fitness_container || true
-                    echo "Starting new container..."
-                    docker run -d --name aceest_fitness_container -p 5001:5000 aceest_fitness:v3
+                    docker run -d --name aceest_fitness_container -p 5001:5000 aceest_fitness:v6
                 '''
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                echo "🔍 Checking running containers..."
                 sh 'docker ps'
             }
         }
@@ -54,10 +49,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build and deployment successful!"
+            echo "✅ Build, test, and deploy completed successfully!"
         }
         failure {
-            echo "❌ Build failed — check the logs."
+            echo "❌ Build failed — check logs for details."
         }
     }
 }
