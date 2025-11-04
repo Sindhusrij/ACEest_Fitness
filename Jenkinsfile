@@ -41,7 +41,7 @@ pipeline {
                 echo "🔍 Running SonarQube analysis..."
                 withSonarQubeEnv('MySonar') {
                     sh '''
-                        sonar-scanner \
+                        /opt/homebrew/bin/sonar-scanner \
                             -Dsonar.projectKey=ACEest_Fitness \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=http://localhost:9000 \
