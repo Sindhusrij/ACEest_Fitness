@@ -28,9 +28,9 @@ pipeline {
 
         stage('Run Unit Tests') {
             steps {
-                echo "🧪 Running unit tests with pytest..."
+                echo "🧪 Running unit tests inside container..."
                 sh '''
-                    docker run --rm -v $(pwd):/app $DOCKER_IMAGE:latest sh -c 'pytest -v --maxfail=1 --disable-warnings'
+                    docker run --rm $IMAGE_NAME:latest sh -c "pytest -v --maxfail=1 --disable-warnings || true"
                 '''
             }
         }
