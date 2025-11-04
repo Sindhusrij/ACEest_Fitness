@@ -30,7 +30,8 @@ pipeline {
             steps {
                 echo "🧪 Running unit tests inside container..."
                 sh '''
-                    docker run --rm $IMAGE_NAME:latest sh -c "pytest -v --maxfail=1 --disable-warnings || true"
+                    IMAGE_NAME=sindhujv/aceest_fitness
+                    docker run --rm $IMAGE_NAME:latest sh -c 'pytest -v --maxfail=1 --disable-warnings || true'
                 '''
             }
         }
