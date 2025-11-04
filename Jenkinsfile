@@ -66,7 +66,7 @@ pipeline {
                 echo "🚀 Deploying container locally..."
                 sh '''
                     docker rm -f aceest_fitness_container || true
-                    docker run -d --name aceest_fitness_container -p 5001:5000 $DOCKER_IMAGE:latest
+                    docker run -d --name aceest_fitness_container -p 5050:5050 $DOCKER_IMAGE:latest
                 '''
             }
         }
