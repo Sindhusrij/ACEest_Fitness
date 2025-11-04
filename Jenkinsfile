@@ -41,7 +41,6 @@ pipeline {
                 echo "🔍 Running SonarQube analysis..."
                 withSonarQubeEnv('MySonar') {
                     sh '''
-                       /var/root/.jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/bin/sonar-scanner \
                         sonar-scanner \
                             -Dsonar.projectKey=ACEest_Fitness \
                             -Dsonar.sources=. \
